@@ -1,3 +1,11 @@
+const faceColor = document.getElementById('face-color');
+const borderColor = document.getElementById('border-color');
+const lineColor = document.getElementById('line-color');
+const largeHandColor = document.getElementById('large-hand-color');
+const secondHandColor = document.getElementById('second-hand-color');
+
+
+
 function clock(){
   const now = new Date();
   const canvas = document.getElementById("canvas");
@@ -16,86 +24,89 @@ function clock(){
   ctx.lineWidth = 5;
   ctx.lineCap = 'round';
 
-  //Draw Clock face/Border
-  ctx.save();
+  // Draw clock face/border
+ctx.save();
+ctx.beginPath();
+ctx.lineWidth = 14;
+ctx.fillStyle = faceColor.value; // Add this
+ctx.strokeStyle = borderColor.value; // Add this
+ctx.arc(0, 0, 142, 0, Math.PI * 2, true);
+ctx.stroke();
+ctx.fill();
+ctx.restore();
+
+  // Draw hour lines
+ctx.save();
+ctx.strokeStyle = lineColor.value; // Add this
+for (let i = 0; i < 12; i++) {
   ctx.beginPath();
-  ctx.lineWidth = 14;
-  ctx.strokeStyle = '#800000';
-  ctx.arc(0, 0, 142, 0, Math.PI * 2, true);
+  ctx.rotate(Math.PI / 6);
+  ctx.moveTo(100, 0);
+  ctx.lineTo(120, 0);
   ctx.stroke();
-  ctx.fill();
-  ctx.restore()
+}
+ctx.restore();
 
-  //Draw Hour Lines
-  ctx.save();
-  for (let i = 0; i<12;i++){
+// Draw minute lines
+ctx.save();
+ctx.lineWidth = 4;
+ctx.strokeStyle = lineColor.value; // Add this
+for (let i = 0; i < 60; i++) {
+  if (i % 5 !== 0) {
     ctx.beginPath();
-    ctx.moveTo(100,0)
-    ctx.lineTo(125,0);
+    ctx.moveTo(117, 0);
+    ctx.lineTo(120, 0);
     ctx.stroke();
-    ctx.rotateText
-    ctx.rotate(Math.PI/6)
   }
-  ctx.restore();
+  ctx.rotate(Math.PI / 30);
+}
+ctx.restore();
 
-  //Draw Minute Lines
-  ctx.save();
-  ctx.lineWidth = 4;
-  for (let i = 0; i<60;i++){
-    ctx.beginPath();
-    ctx.moveTo(117,0)
-    ctx.lineTo(120,0);
-    ctx.stroke();
-    ctx.rotateText
-    ctx.rotate(Math.PI/30)
-  }
-  ctx.restore();
+
 
   //Get Current TIme
   const hr = now.getHours() %12;
   const min  = now.getMinutes();
   const sec = now.getSeconds();
   console.log(`${hr}:${min}:${sec}`)
+// Draw hour hand
+ctx.save();
+ctx.rotate(
+  (Math.PI / 6) * hr + (Math.PI / 360) * min + (Math.PI / 21600) * sec
+);
+ctx.strokeStyle = largeHandColor.value; // Add this
+ctx.lineWidth = 14;
+ctx.beginPath();
+ctx.moveTo(-20, 0);
+ctx.lineTo(80, 0);
+ctx.stroke();
+ctx.restore();
 
- // Write Hours
-  ctx.save();
-  ctx.strokeStyle = '#800000';
-  ctx.rotate(
-    (Math.PI / 6) * hr + (Math.PI / 360) * min + (Math.PI / 21600) * sec
-  );
-  ctx.lineWidth = 14;
-  ctx.beginPath();
-  ctx.moveTo(-20, 0);
-  ctx.lineTo(80, 0);
-  ctx.stroke();
-  ctx.restore();
-
-  // Draw minute hand
-  ctx.save();
-  ctx.strokeStyle = '#800000';
-
-  ctx.rotate((Math.PI / 30) * min + (Math.PI / 1800) * sec);
-  ctx.lineWidth = 10;
-  ctx.beginPath();
-  ctx.moveTo(-28, 0);
-  ctx.lineTo(112, 0);
-  ctx.stroke();
-  ctx.restore();
+// Draw minute hand
+ctx.save();
+ctx.rotate((Math.PI / 30) * min + (Math.PI / 1800) * sec);
+ctx.strokeStyle = largeHandColor.value; // Add this
+ctx.lineWidth = 10;
+ctx.beginPath();
+ctx.moveTo(-28, 0);
+ctx.lineTo(112, 0);
+ctx.stroke();
+ctx.restore();
 
   // Draw second hand
-  ctx.save();
-  ctx.rotate((sec * Math.PI) / 30);
-  ctx.strokeStyle = '#FF7F50';
-  ctx.fillStyle = '#FF7F50';
-  ctx.lineWidth = 6;
-  ctx.beginPath();
-  ctx.moveTo(-30, 0);
-  ctx.lineTo(100, 0);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(0, 0, 10, 0, Math.PI * 2, true);
-  ctx.fill();
-  ctx.restore();
+ctx.save();
+ctx.rotate((sec * Math.PI) / 30);
+ctx.strokeStyle = secondHandColor.value; // Add this
+ctx.fillStyle = secondHandColor.value; // Add this
+ctx.lineWidth = 6;
+ctx.beginPath();
+ctx.moveTo(-30, 0);
+ctx.lineTo(100, 0);
+ctx.stroke();
+ctx.beginPath();
+ctx.arc(0, 0, 10, 0, Math.PI * 2, true);
+ctx.fill();
+ctx.restore();
 
 
 
@@ -105,3 +116,12 @@ function clock(){
 }
 
 requestAnimationFrame(clock);
+
+document.getElementById('save-btn').addEventListener('click', () => {
+  const canvas = document.getElementById('canvas');
+  const dataURL = canvas.toDataURL('image/png');
+  const link = document.createElement('a');
+  link.download = 'clock.png';
+  link.href = dataURL;
+  link.click();
+});
